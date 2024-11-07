@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        KUBECONFIG = "/home/vinay.kumar3@happiestminds.com/.kube/config"
-    }
-
     stages {
         stage('git checkout') {
             steps {
@@ -14,7 +10,7 @@ pipeline {
 
         stage('mysql deployment') {
             steps {
-                withEnv(["KUBECONFIG=$KUBECONFIG"]) {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                     sh '''
                     kubectl apply -f wordpre-phpmysql-mysql-deployments/mysql-user-pass.yaml
                     kubectl apply -f wordpre-phpmysql-mysql-deployments/mysql-db-url.yaml
@@ -30,7 +26,7 @@ pipeline {
 
         stage('php-myadmin-deployment') {
             steps {
-                withEnv(["KUBECONFIG=$KUBECONFIG"]) {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                     sh '''
                     kubectl apply -f wordpre-phpmysql-mysql-deployments/phpmyadmin-deploy.yaml
                     kubectl apply -f wordpre-phpmysql-mysql-deployments/phpmyadmin-service.yaml
@@ -41,7 +37,7 @@ pipeline {
 
         stage('wordpress-deployment') {
             steps {
-                withEnv(["KUBECONFIG=$KUBECONFIG"]) {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                     sh '''
                     kubectl apply -f wordpre-phpmysql-mysql-deployments/wordpress-deploy.yaml
                     kubectl apply -f wordpre-phpmysql-mysql-deployments/wordpress-service.yaml
